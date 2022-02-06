@@ -4,11 +4,11 @@ import Footer from './footer'
 
 const Layout: NextPage = ({ children }) => {
   return (
-    <>
+    <div className='w-full'>
       <NavBar />
-      <main>{children}</main>
+      <main className='py-5 px-2 sm:px-5'>{children}</main>
       <Footer />
-    </>
+    </div>
   )
 }
 

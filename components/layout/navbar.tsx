@@ -1,19 +1,13 @@
 import type { NextPage } from 'next'
+import { SystemConst } from '../const'
 import Link from 'next/link'
-import styles from '../../styles/navbar.module.css'
 
 const NavBar: NextPage = () => {
   return (
-    <nav className={styles.nav}>
-      <Link href='/'>
-        <a>Home</a>
-      </Link>
-      <Link href='/about'>
-        <a>About</a>
-      </Link>
-      <Link href='/contact'>
-        <a>Contact</a>
-      </Link>
+    <nav className='flex p-5 w-full bg-slate-200 border-b border-slate-400'>
+      <h1>
+        <Link href='/'>{SystemConst.APPLICATION_NAME}</Link>
+      </h1>
     </nav>
   )
 }
