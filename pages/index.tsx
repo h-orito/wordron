@@ -36,14 +36,14 @@ const Home: NextPage = ({
       <div>
         <h1 className='text-lg'>わーどるを作成する</h1>
         <section className='mt-5 mb-10 text-sm'>
-          <Link href='/create-game'>
+          <Link href='/create-game' passHref>
             <PrimaryButton onClick={() => {}}>
               新しいわーどるを作成する
             </PrimaryButton>
           </Link>
         </section>
         <h1 className='text-lg'>最近作成されたわーどる</h1>
-        <section className='mt-5 text-sm mb-10'>
+        <section className='mt-5 mb-10 text-sm'>
           <table className='w-full text-gray-600'>
             <thead>
               <tr>
@@ -55,7 +55,7 @@ const Home: NextPage = ({
               {data.games.map((game: Game, index: number) => {
                 const tdClass = index % 2 == 0 ? 'bg-gray-50' : ''
                 return (
-                  <tr>
+                  <tr key={index}>
                     <td className={`${styles.td} ${tdClass}`}>
                       <Link href={`/game/${game.id}`}>
                         <a>{game.name}</a>
