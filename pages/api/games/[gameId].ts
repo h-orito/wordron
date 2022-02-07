@@ -17,7 +17,7 @@ export default function handler(
       creator: '作成者名',
       description: 'むずかしいかもね',
       dictionaries: ['せいかいは', 'なんだろね'],
-      word: 'せいかいは'
+      word: 'あいうえお'
     }
   })
 }
