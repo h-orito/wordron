@@ -100,9 +100,9 @@ const NewGamePage = () => {
       <div className='text-sm'>
         <p className='mb-5 text-xl'>新しいわーどるを作成する</p>
         <div className='mb-5'>
-          <Label>わーどる名</Label>
+          <Label>わーどる名（テーマ）</Label>
           <InputText
-            className='w-80'
+            className='mx-auto w-80'
             value={gameName}
             onChange={(e) => setGameName(e.target.value)}
           />
@@ -111,7 +111,7 @@ const NewGamePage = () => {
         <div className='mb-5'>
           <Label>説明</Label>
           <InputText
-            className='w-80'
+            className='mx-auto w-80'
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -122,7 +122,7 @@ const NewGamePage = () => {
         <div className='mb-5'>
           <Label>作成者名</Label>
           <InputText
-            className='w-80'
+            className='mx-auto w-80'
             value={creator}
             onChange={(e) => setCreator(e.target.value)}
           />
@@ -132,8 +132,11 @@ const NewGamePage = () => {
         </div>
         <div className='mb-5'>
           <Label>解答候補（ひらがな）</Label>
+          <p className='mb-2 text-sm text-gray-500'>
+            この中からランダムでお題が出題されます。
+          </p>
           <Textarea
-            className='w-80 h-96'
+            className='mx-auto w-80 h-96'
             value={dictionaries}
             onChange={(e) => setDictionaries(e.target.value)}
           />
@@ -144,7 +147,7 @@ const NewGamePage = () => {
         <div className='mb-5'>
           <Label>最大回答回数</Label>
           <InputNumber
-            className='w-20'
+            className='mx-auto w-20 text-right'
             value={maxAnswerCount}
             onChange={(e) => setMaxAnswerCount(parseInt(e.target.value))}
           />
@@ -152,8 +155,10 @@ const NewGamePage = () => {
             <p className='text-red-500'>{maxAnswerCountError}</p>
           )}
         </div>
-        <div>
-          <PrimaryButton onClick={save}>作成する</PrimaryButton>
+        <div className='mt-10'>
+          <PrimaryButton onClick={save} className='ml-4'>
+            作成する
+          </PrimaryButton>
         </div>
       </div>
     </div>

@@ -35,14 +35,16 @@ const Home: NextPage = ({
       </Head>
 
       <div>
-        <h1 className='text-lg'>わーどるを作成する</h1>
-        <section className='mt-5 mb-10 text-sm'>
+        <section className='py-10 mb-10 text-sm'>
+          <p className='mb-5 leading-relaxed text-gray-600'>
+            わーどるめーかーは、オリジナルのWordleの問題を作成できるサービスです。
+          </p>
           <PrimaryButton onClick={() => Router.push('/create-game')}>
             新しいわーどるを作成する
           </PrimaryButton>
         </section>
-        <h1 className='text-lg'>最近作成されたわーどる</h1>
-        <section className='mt-5 mb-10 text-sm'>
+        <section className='py-10 text-sm'>
+          <h1 className='mb-10 text-lg'>最近作成されたわーどる</h1>
           <table className='w-full text-gray-600'>
             <thead>
               <tr>

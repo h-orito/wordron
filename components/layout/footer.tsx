@@ -2,7 +2,6 @@ import { useState } from 'react'
 import type { NextPage } from 'next'
 import Modal from '../modal/modal'
 import { PrimaryButton } from '../button/button'
-import MouseEventHandler from 'react'
 
 const Footer: NextPage = () => {
   const [isKampaModalShow, setKampaModalShow] = useState(false)
@@ -13,18 +12,28 @@ const Footer: NextPage = () => {
   const closeKampaModal = () => setKampaModalShow(false)
 
   return (
-    <footer className='p-5 text-sm border-t border-t-slate-400'>
+    <footer className='p-5 text-sm text-center border-t border-t-slate-400'>
       <ul>
         <li>
-          要望、改善提案、不具合報告はTwitter
+          © 2022-{' '}
           <a
             href='https://twitter.com/ort_dev'
             target='_blank'
             rel='noreferrer'
           >
-            @ort_dev
+            ort
           </a>
-          までお願いします。
+        </li>
+        <li>
+          このサイトは、
+          <a
+            href='https://www.powerlanguage.co.uk/wordle/'
+            target='_blank'
+            rel='noreferrer'
+          >
+            Wordle
+          </a>
+          にインスパイアされて製作しました。
         </li>
         <li>
           投げ銭いただける方は
@@ -32,17 +41,6 @@ const Footer: NextPage = () => {
             こちら
           </a>
           からお願いします。
-        </li>
-        <li>
-          © 2022- ort（
-          <a
-            href='https://github.com/h-orito/wordron'
-            target='_blank'
-            rel='noreferrer'
-          >
-            Github
-          </a>
-          ）
         </li>
       </ul>
       <Modal

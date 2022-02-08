@@ -5,6 +5,8 @@ import Modal from '../components/modal/modal'
 import { SystemConst } from '../components/const'
 import InputText from '../components/form/input-text'
 import { PrimaryButton } from '../components/button/button'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBackspace } from '@fortawesome/free-solid-svg-icons'
 
 type Data = {
   game: Game | null
@@ -40,6 +42,10 @@ const GamePage = ({
   const addCharToCurrentAnswer = (char: string) => {
     if (!availableAnswer) return
     setCurrentAnswer(currentAnswer + char)
+  }
+  const removeCurrentAnswer = () => {
+    if (!availableAnswer) return
+    setCurrentAnswer(currentAnswer.slice(0, -1))
   }
   const [currentAnswerError, setCurrentAnswerError] = useState('')
   const [availableAnswer, setAvailableAnswer] = useState(true)
@@ -84,11 +90,11 @@ const GamePage = ({
         <div className='my-5'>
           <div className='flex flex-col gap-2'>
             {answers.map((answer, colIdx) => (
-              <div key={colIdx} className='flex gap-2'>
+              <div key={colIdx} className='flex gap-2 justify-center'>
                 {answer.strs.map((answerString, rowIdx) => (
                   <div
                     key={rowIdx}
-                    className={`w-12 h-12 text-4xl text-center rounded border-4 border-gray-400 text-white ${answerString.color}`}
+                    className={`w-12 h-12 text-4xl text-center rounded border-4 border-gray-300 text-white ${answerString.color}`}
                   >
                     {answerString.str}
                   </div>
@@ -96,11 +102,11 @@ const GamePage = ({
               </div>
             ))}
             {[...Array(maxAnswerCount - answers.length)].map((_, colIdx) => (
-              <div key={colIdx} className='flex gap-2'>
+              <div key={colIdx} className='flex gap-2 justify-center'>
                 {[...Array(answerLength)].map((_, rowIdx) => (
                   <div
                     key={rowIdx}
-                    className='w-12 h-12 text-4xl text-center text-white rounded border-4 border-gray-400'
+                    className='w-12 h-12 text-4xl text-center text-white rounded border-4 border-gray-300'
                   ></div>
                 ))}
               </div>
@@ -108,10 +114,10 @@ const GamePage = ({
           </div>
         </div>
 
-        <div className='my-5'>
-          <div className='flex'>
+        <div className='mt-10 mb-5'>
+          <div className='flex justify-center'>
             <InputText
-              className={`w-96 ${
+              className={`ml-4 flex-1 sm:flex-none sm:w-80  ${
                 currentAnswerError.length > 0 ? 'border-red-500' : ''
               }`}
               value={currentAnswer}
@@ -139,17 +145,33 @@ const GamePage = ({
         </div>
 
         <div className='my-5'>
-          <div className='flex flex-col gap-2'>
+          <div className='flex flex-col gap-1'>
+            <div className='flex gap-1 justify-center'>
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className='w-10 h-10'></div>
+              ))}
+              <div
+                className='h-10 text-center text-gray-600 bg-gray-200 rounded border-4 border-gray-200 cursor-pointer sm:text-2xl'
+                style={{ width: '5.25rem' }}
+                onClick={removeCurrentAnswer}
+              >
+                <FontAwesomeIcon icon={faBackspace} className='mt-0.5' />
+              </div>
+            </div>
             {kanas.map((col, colIdx) => (
-              <div key={colIdx} className='flex gap-2'>
+              <div key={colIdx} className='flex gap-1 justify-center'>
                 {col.map((kana, rowIdx) => (
                   <div
                     key={rowIdx}
-                    className={`w-10 h-10 sm:w-10 sm:h-10 ${
+                    className={`w-10 h-10 ${
                       kana.kana != null
-                        ? 'sm:text-2xl text-center text-gray-400 rounded border-4 border-gray-400'
+                        ? 'sm:text-2xl text-center rounded border-4 border-gray-200 bg-gray-200'
                         : ''
-                    } ${kana.color != null ? `text-white ${kana.color}` : ''}
+                    } ${
+                      kana.color != null
+                        ? `text-white ${kana.color}`
+                        : 'text-gray-600 '
+                    }
                        ${availableAnswer ? 'cursor-pointer' : ''}`}
                     onClick={() => addCharToCurrentAnswer(kana.kana || '')}
                   >
