@@ -2,10 +2,11 @@ import { useState } from 'react'
 import type { NextPage } from 'next'
 import Modal from '../modal/modal'
 import { PrimaryButton } from '../button/button'
+import MouseEventHandler from 'react'
 
 const Footer: NextPage = () => {
   const [isKampaModalShow, setKampaModalShow] = useState(false)
-  const openKampaModal = (e: MouseEvent) => {
+  const openKampaModal = (e: any) => {
     e.preventDefault()
     setKampaModalShow(true)
   }
