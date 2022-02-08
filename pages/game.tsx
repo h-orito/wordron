@@ -26,7 +26,6 @@ const GamePage = ({
   // TODO how to play
   // TODO tweet
   // TODO 正解の文字が被っているパターン
-  // TODO スマホの文字入力補助
   // TODO 結果モーダル
 
   const game: Game = data.game
@@ -45,91 +44,29 @@ const GamePage = ({
   const [currentAnswerError, setCurrentAnswerError] = useState('')
   const [availableAnswer, setAvailableAnswer] = useState(true)
   // 回答履歴
-  const [answers, setAnswers] = useState(
-    createInitialAnswers(maxAnswerCount, answerLength)
-  )
+  const [answers, setAnswers] = useState([] as Answer[])
   // 五十音表
   const [kanas, setKanas] = useState(initialKanas)
 
   // 回答する
   const doAnswer = () => {
     const correctAnswer = game.word!
+    // validate
     const errorMsg = validateCurrentAnswer(currentAnswer, answerLength)
     setCurrentAnswerError(errorMsg)
     if (errorMsg.length > 0) return
 
-    const answerWords = correctAnswer.split('')
-
-    const currentAnswerIndex = answers.findIndex(
-      (answer) => answer.strs[0].color == null
-    )!
-    if (currentAnswerIndex == -1) {
-      setAvailableAnswer(false)
-      return
-    }
-    // 解答
-    let anss = answers.slice()
-    anss.splice(currentAnswerIndex, 1, {
-      strs: currentAnswer.split('').map((wordStr: string, index: number) => {
-        return {
-          str: wordStr,
-          color:
-            answerWords[index] === wordStr
-              ? 'bg-green-500'
-              : answerWords.some((a: string) => a === wordStr)
-              ? 'bg-yellow-500'
-              : 'bg-gray-500'
-        }
-      })
-    } as Answer)
-    setAnswers(anss)
+    // 回答履歴
+    const newAnswers = addAnswer(currentAnswer, correctAnswer, answers)
+    setAnswers(newAnswers)
     // 五十音表
-    const newKanas = kanas.map((kanaArray) => {
-      return kanaArray.map((kana) => {
-        if (
-          anss.some((answer) =>
-            answer.strs.some(
-              (str) => str.str === kana.kana && str.color === 'bg-green-500'
-            )
-          )
-        ) {
-          return {
-            kana: kana.kana,
-            color: 'bg-green-500'
-          } as Kana
-        } else if (
-          anss.some((answer) =>
-            answer.strs.some(
-              (str) => str.str === kana.kana && str.color === 'bg-yellow-500'
-            )
-          )
-        ) {
-          return {
-            kana: kana.kana,
-            color: 'bg-yellow-500'
-          } as Kana
-        } else if (
-          anss.some((answer) =>
-            answer.strs.some(
-              (str) => str.str === kana.kana && str.color === 'bg-gray-500'
-            )
-          )
-        ) {
-          return {
-            kana: kana.kana,
-            color: 'bg-gray-500'
-          } as Kana
-        }
-        return kana
-      })
-    })
-    setKanas(newKanas)
+    setKanas(updateKanas(newAnswers))
     // 回答をリセット
-    setCurrentAnswer('')
-    if (currentAnswerIndex === maxAnswerCount - 1) {
+    if (answers.length >= maxAnswerCount || currentAnswer === correctAnswer) {
       setAvailableAnswer(false)
       // TODO result modal
     }
+    setCurrentAnswer('')
   }
 
   return (
@@ -139,8 +76,11 @@ const GamePage = ({
       </Head>
 
       <div className='text-sm'>
-        <p className='mb-2 text-xl'>{data.game.name}</p>
-        <p className='text-gray-400'>{data.game.description}</p>
+        <p className='mb-2 text-xl'>{game.name}</p>
+        <p className='text-gray-400'>
+          解答パターン: {game.dictionaries.length}通り
+        </p>
+        <p className='text-gray-400'>{game.description}</p>
         <div className='my-5'>
           <div className='flex flex-col gap-2'>
             {answers.map((answer, colIdx) => (
@@ -148,12 +88,20 @@ const GamePage = ({
                 {answer.strs.map((answerString, rowIdx) => (
                   <div
                     key={rowIdx}
-                    className={`w-12 h-12 text-4xl text-center rounded border-4 border-gray-400 text-white ${
-                      answerString.color != null ? answerString.color : ''
-                    }`}
+                    className={`w-12 h-12 text-4xl text-center rounded border-4 border-gray-400 text-white ${answerString.color}`}
                   >
                     {answerString.str}
                   </div>
+                ))}
+              </div>
+            ))}
+            {[...Array(maxAnswerCount - answers.length)].map((_, colIdx) => (
+              <div key={colIdx} className='flex gap-2'>
+                {[...Array(answerLength)].map((_, rowIdx) => (
+                  <div
+                    key={rowIdx}
+                    className='w-12 h-12 text-4xl text-center text-white rounded border-4 border-gray-400'
+                  ></div>
                 ))}
               </div>
             ))}
@@ -230,20 +178,6 @@ const GamePage = ({
 
 export default GamePage
 
-const createInitialAnswers = (maxTryCount: number, answerLength: number) =>
-  [...Array(maxTryCount)].map(
-    (_) =>
-      ({
-        strs: [...Array(answerLength)].map(
-          (_) =>
-            ({
-              str: null,
-              color: null
-            } as AnswerString)
-        )
-      } as Answer)
-  )
-
 type Answer = {
   strs: AnswerString[]
 }
@@ -292,4 +226,50 @@ const validateCurrentAnswer = (
     return '解答はひらがなで入力してください。'
   }
   return ''
+}
+
+const addAnswer = (
+  currentAnswer: string,
+  correctAnswer: string,
+  answers: Answer[]
+): Answer[] => {
+  const currentAnswerChars = currentAnswer.split('')
+  const correctAnswerChars = correctAnswer.split('')
+  const newAnswer = {
+    strs: currentAnswerChars.map((char: string, index: number) => {
+      return {
+        str: char,
+        color:
+          correctAnswerChars[index] === char
+            ? 'bg-green-500'
+            : correctAnswerChars.some((a: string) => a === char)
+            ? 'bg-yellow-500'
+            : 'bg-gray-500'
+      }
+    })
+  } as Answer
+  const newAnswers = answers.slice()
+  newAnswers.push(newAnswer)
+  return newAnswers
+}
+
+const updateKanas = (answers: Answer[]): Kana[][] => {
+  return initialKanas.map((kanaArray) => {
+    return kanaArray.map((kana) => {
+      const strs: AnswerString[] = answers.flatMap((answer) =>
+        answer.strs.filter((s) => s.str === kana.kana)
+      )
+      const color = strs.some((s) => s.color === 'bg-green-500')
+        ? 'bg-green-500'
+        : strs.some((s) => s.color === 'bg-yellow-500')
+        ? 'bg-yellow-500'
+        : strs.some((s) => s.color === 'bg-gray-500')
+        ? 'bg-gray-500'
+        : null
+      return {
+        kana: kana.kana,
+        color: color
+      } as Kana
+    })
+  })
 }
