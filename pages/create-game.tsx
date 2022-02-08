@@ -7,31 +7,24 @@ import Label from '../components/form/label'
 import Textarea from '../components/form/textarea'
 import { PrimaryButton } from '../components/button/button'
 import Router from 'next/router'
+import InputNumber from '../components/form/input-number'
 
 type Data = {
   game: Game | null
 }
 
-export const getServerSideProps: GetServerSideProps = async (id) => {
-  const res = await fetch(`${process.env.API_ORIGIN}/games/${id}`)
-  const data: Data = await res.json()
-  return {
-    props: { data }
-  }
-}
-
-const NewGamePage = ({
-  data
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const NewGamePage = () => {
   const [gameName, setGameName] = useState('')
   const [description, setDescription] = useState('')
   const [creator, setCreator] = useState('')
   const [dictionaries, setDictionaries] = useState('')
+  const [maxAnswerCount, setMaxAnswerCount] = useState(10)
 
   const [nameError, setNameError] = useState('')
   const [descriptionError, setDescriptionError] = useState('')
   const [creatorError, setCreatorError] = useState('')
   const [dictionariesError, setDictionariesError] = useState('')
+  const [maxAnswerCountError, setMaxAnswerCountError] = useState('')
 
   const save = async () => {
     setNameError('')
@@ -67,11 +60,19 @@ const NewGamePage = ({
       setDictionariesError('解答候補は文字数を揃えてください。')
     }
 
+    setMaxAnswerCountError('')
+    if (maxAnswerCount < 1 || 20 < maxAnswerCount) {
+      setMaxAnswerCountError(
+        '最大回答回数は1回以上20回以内で設定してください。'
+      )
+    }
+
     if (
       nameError.length === 0 &&
       descriptionError.length === 0 &&
       creatorError.length === 0 &&
-      dictionariesError.length === 0
+      dictionariesError.length === 0 &&
+      maxAnswerCountError.length === 0
     ) {
       const game: Game = {
         key: null,
@@ -79,6 +80,7 @@ const NewGamePage = ({
         description,
         creator,
         dictionaries: dictionariesArr,
+        maxAnswerCount: maxAnswerCount,
         created: new Date().getTime()
       }
       await fetch(`/api/games`, {
@@ -129,7 +131,7 @@ const NewGamePage = ({
           )}
         </div>
         <div className='mb-5'>
-          <Label>解答候補</Label>
+          <Label>解答候補（ひらがな）</Label>
           <Textarea
             className='w-80 h-96'
             value={dictionaries}
@@ -137,6 +139,17 @@ const NewGamePage = ({
           />
           {dictionariesError.length > 0 && (
             <p className='text-red-500'>{dictionariesError}</p>
+          )}
+        </div>
+        <div className='mb-5'>
+          <Label>最大回答回数</Label>
+          <InputNumber
+            className='w-20'
+            value={maxAnswerCount}
+            onChange={(e) => setMaxAnswerCount(parseInt(e.target.value))}
+          />
+          {maxAnswerCountError.length > 0 && (
+            <p className='text-red-500'>{maxAnswerCountError}</p>
           )}
         </div>
         <div>

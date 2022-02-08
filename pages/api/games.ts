@@ -20,7 +20,9 @@ export default async function handler(
     .orderByChild('created')
     .limitToLast(10)
     .get()
-  const games: Game[] = Object.entries(snapshot.val()).map(([key, value]) => {
+  const snapShotGames = snapshot.val()
+  if (snapShotGames == null) return res.status(200).json({ games: [] })
+  const games: Game[] = Object.entries(snapShotGames).map(([key, value]) => {
     const g = value as Game
     return {
       ...g,
@@ -29,34 +31,6 @@ export default async function handler(
   })
 
   res.status(200).json({ games: games.reverse() })
-  // res.status(200).json({
-  //   games: [
-  //     {
-  //       key: 'aaa',
-  //       name: 'ゲーム名',
-  //       creator: '作成者名',
-  //       description: '難しいかも',
-  //       dictionaries: ['せいかいは', 'なんだろね'],
-  //       created: new Date().getTime()
-  //     },
-  //     {
-  //       key: 'aaa',
-  //       name: 'ゲーム名',
-  //       creator: '作成者名',
-  //       description: '難しいかも',
-  //       dictionaries: ['せいかいは', 'なんだろね'],
-  //       created: new Date().getTime()
-  //     },
-  //     {
-  //       key: 'aaa',
-  //       name: 'ゲーム名',
-  //       creator: '作成者名',
-  //       description: '難しいかも',
-  //       dictionaries: ['せいかいは', 'なんだろね'],
-  //       created: new Date().getTime()
-  //     }
-  //   ]
-  // })
 }
 
 const handlePost = async (req: NextApiRequest) => {

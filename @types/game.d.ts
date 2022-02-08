@@ -4,6 +4,7 @@ type Game = {
   creator: string
   description: string
   dictionaries: string[]
+  maxAnswerCount: number
   word?: string
   created: number
 }

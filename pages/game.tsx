@@ -24,26 +24,42 @@ const GamePage = ({
   data
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   // TODO how to play
-  // TODO ひらがなの小文字大文字濁点半濁点
-  // TODO ひらがなチェック
   // TODO tweet
   // TODO 正解の文字が被っているパターン
   // TODO スマホの文字入力補助
-  // TODO 最大回答回数をゲーム設定に盛り込む
+  // TODO 結果モーダル
 
+  const game: Game = data.game
+  const maxAnswerCount: number = game.maxAnswerCount
+  const answerLength: number = game.dictionaries[0].length
+
+  // modal
   const [isHowtoModalOpen, setHowtoModalOpen] = useState(true)
   const closeHowtoModal = () => setHowtoModalOpen(false)
-  const [word, setWord] = useState('')
-  const [answers, setAnswers] = useState(initialAnswers)
-  const [kanas, setKanas] = useState(initialKanas)
+  // 回答入力欄
+  const [currentAnswer, setCurrentAnswer] = useState('')
+  const addCharToCurrentAnswer = (char: string) => {
+    if (!availableAnswer) return
+    setCurrentAnswer(currentAnswer + char)
+  }
+  const [currentAnswerError, setCurrentAnswerError] = useState('')
   const [availableAnswer, setAvailableAnswer] = useState(true)
+  // 回答履歴
+  const [answers, setAnswers] = useState(
+    createInitialAnswers(maxAnswerCount, answerLength)
+  )
+  // 五十音表
+  const [kanas, setKanas] = useState(initialKanas)
 
+  // 回答する
   const doAnswer = () => {
-    const correctAnswer = data.game.word!
-    if (word.length !== correctAnswer.length) {
-      return
-    }
+    const correctAnswer = game.word!
+    const errorMsg = validateCurrentAnswer(currentAnswer, answerLength)
+    setCurrentAnswerError(errorMsg)
+    if (errorMsg.length > 0) return
+
     const answerWords = correctAnswer.split('')
+
     const currentAnswerIndex = answers.findIndex(
       (answer) => answer.strs[0].color == null
     )!
@@ -54,7 +70,7 @@ const GamePage = ({
     // 解答
     let anss = answers.slice()
     anss.splice(currentAnswerIndex, 1, {
-      strs: word.split('').map((wordStr: string, index: number) => {
+      strs: currentAnswer.split('').map((wordStr: string, index: number) => {
         return {
           str: wordStr,
           color:
@@ -109,7 +125,11 @@ const GamePage = ({
     })
     setKanas(newKanas)
     // 回答をリセット
-    setWord('')
+    setCurrentAnswer('')
+    if (currentAnswerIndex === maxAnswerCount - 1) {
+      setAvailableAnswer(false)
+      // TODO result modal
+    }
   }
 
   return (
@@ -143,9 +163,11 @@ const GamePage = ({
         <div className='my-5'>
           <div className='flex'>
             <InputText
-              className='w-96'
-              value={word}
-              onChange={(event) => setWord(event.target.value)}
+              className={`w-96 ${
+                currentAnswerError.length > 0 ? 'border-red-500' : ''
+              }`}
+              value={currentAnswer}
+              onChange={(event) => setCurrentAnswer(event.target.value)}
               onKeyPress={(e) => {
                 if (e.key == 'Enter') {
                   e.preventDefault()
@@ -153,6 +175,7 @@ const GamePage = ({
                 }
               }}
               disabled={!availableAnswer}
+              placeholder={`ひらがな${answerLength}文字で入力`}
             />
             <PrimaryButton
               className='ml-2'
@@ -162,6 +185,9 @@ const GamePage = ({
               解答する
             </PrimaryButton>
           </div>
+          {currentAnswerError.length > 0 && (
+            <p className='mt-1 ml-1 text-red-500'>{currentAnswerError}</p>
+          )}
         </div>
 
         <div className='my-5'>
@@ -171,11 +197,13 @@ const GamePage = ({
                 {col.map((kana, rowIdx) => (
                   <div
                     key={rowIdx}
-                    className={`w-7 h-7 sm:w-10 sm:h-10 ${
+                    className={`w-10 h-10 sm:w-10 sm:h-10 ${
                       kana.kana != null
                         ? 'sm:text-2xl text-center text-gray-400 rounded border-4 border-gray-400'
                         : ''
-                    } ${kana.color != null ? `text-white ${kana.color}` : ''}`}
+                    } ${kana.color != null ? `text-white ${kana.color}` : ''}
+                       ${availableAnswer ? 'cursor-pointer' : ''}`}
+                    onClick={() => addCharToCurrentAnswer(kana.kana || '')}
                   >
                     {kana.kana}
                   </div>
@@ -202,6 +230,20 @@ const GamePage = ({
 
 export default GamePage
 
+const createInitialAnswers = (maxTryCount: number, answerLength: number) =>
+  [...Array(maxTryCount)].map(
+    (_) =>
+      ({
+        strs: [...Array(answerLength)].map(
+          (_) =>
+            ({
+              str: null,
+              color: null
+            } as AnswerString)
+        )
+      } as Answer)
+  )
+
 type Answer = {
   strs: AnswerString[]
 }
@@ -211,31 +253,21 @@ type AnswerString = {
   color: string | null
 }
 
-const initialAnswers: Answer[] = [...Array(10)].map((_) => {
-  return {
-    strs: [...Array(5)].map((_) => {
-      return {
-        str: null,
-        color: null
-      } as AnswerString
-    })
-  } as Answer
-})
-
 type Kana = {
   kana: string | null
   color: string | null
 }
 
 const initialKanas: Kana[][] = [
-  'あいうえお　かきくけこ',
-  'さしすせそ　たちつてと',
-  'なにぬねの　はひふへほ',
-  'まみむめも　や　ゆ　よ',
-  'わ　を　ん　がぎぐげご',
-  'ざじずぜぞ　だぢづでど',
-  'ばびぶべぼ　ぱぴぷぺぽ',
-  'ぁぃぅぇぉ　ゃゅょっー'
+  'あいうえおかきくけこ',
+  'さしすせそたちつてと',
+  'なにぬねのはひふへほ',
+  'まみむめもや　ゆ　よ',
+  'らりるれろわ　を　ん',
+  'がぎぐげござじずぜぞ',
+  'だぢづでどばびぶべぼ',
+  'ぱぴぷぺぽぁぃぅぇぉ',
+  '　　　　　ゃゅょっー'
 ].map((str) =>
   str.split('').map((str) => {
     return {
@@ -244,3 +276,20 @@ const initialKanas: Kana[][] = [
     } as Kana
   })
 )
+
+const validateCurrentAnswer = (
+  currentAnswer: string,
+  answerLength: number
+): string => {
+  if (currentAnswer.length !== answerLength) {
+    return `解答は${answerLength}文字です。`
+  }
+  if (
+    currentAnswer
+      .split('')
+      .some((char) => !SystemConst.HIRAGANAS.some((h) => h === char))
+  ) {
+    return '解答はひらがなで入力してください。'
+  }
+  return ''
+}
