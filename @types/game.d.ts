@@ -1,8 +1,9 @@
 type Game = {
-  id: number
+  key: string | null
   name: string
   creator: string
   description: string
   dictionaries: string[]
   word?: string
+  created: number
 }

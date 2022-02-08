@@ -5,10 +5,11 @@ import type {
 } from 'next'
 import Link from 'next/link'
 import Head from 'next/head'
-import Image from 'next/image'
 import { SystemConst } from '../components/const'
 import styles from './index.module.css'
 import { PrimaryButton } from '../components/button/button'
+import React from 'react'
+import Router from 'next/router'
 
 type Data = {
   games: Game[]
@@ -36,11 +37,9 @@ const Home: NextPage = ({
       <div>
         <h1 className='text-lg'>わーどるを作成する</h1>
         <section className='mt-5 mb-10 text-sm'>
-          <Link href='/create-game' passHref>
-            <PrimaryButton onClick={() => {}}>
-              新しいわーどるを作成する
-            </PrimaryButton>
-          </Link>
+          <PrimaryButton onClick={() => Router.push('/create-game')}>
+            新しいわーどるを作成する
+          </PrimaryButton>
         </section>
         <h1 className='text-lg'>最近作成されたわーどる</h1>
         <section className='mt-5 mb-10 text-sm'>
@@ -57,7 +56,7 @@ const Home: NextPage = ({
                 return (
                   <tr key={index}>
                     <td className={`${styles.td} ${tdClass}`}>
-                      <Link href={`/game/${game.id}`}>
+                      <Link href={`/game?key=${game.key}`}>
                         <a>{game.name}</a>
                       </Link>
                     </td>

@@ -1,17 +1,19 @@
 import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { useState } from 'react'
 import Head from 'next/head'
-import Modal from '../../components/modal/modal'
-import { SystemConst } from '../../components/const'
-import InputText from '../../components/form/input-text'
-import { PrimaryButton } from '../../components/button/button'
+import Modal from '../components/modal/modal'
+import { SystemConst } from '../components/const'
+import InputText from '../components/form/input-text'
+import { PrimaryButton } from '../components/button/button'
 
 type Data = {
   game: Game | null
 }
 
-export const getServerSideProps: GetServerSideProps = async (id) => {
-  const res = await fetch(`${process.env.API_ORIGIN}/games/${id}`)
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const res = await fetch(
+    `${process.env.API_ORIGIN}/game?key=${context.query.key}`
+  )
   const data: Data = await res.json()
   return {
     props: { data }
@@ -226,11 +228,14 @@ type Kana = {
 }
 
 const initialKanas: Kana[][] = [
-  'んわらやまはなたさかあ',
-  '　　り　みひにちしきい',
-  '　　るゆむふぬつすくう',
-  '　　れ　めへねてせけえ',
-  '　をろよもほのとそこお'
+  'あいうえお　かきくけこ',
+  'さしすせそ　たちつてと',
+  'なにぬねの　はひふへほ',
+  'まみむめも　や　ゆ　よ',
+  'わ　を　ん　がぎぐげご',
+  'ざじずぜぞ　だぢづでど',
+  'ばびぶべぼ　ぱぴぷぺぽ',
+  'ぁぃぅぇぉ　ゃゅょっー'
 ].map((str) =>
   str.split('').map((str) => {
     return {
