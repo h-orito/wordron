@@ -5,7 +5,10 @@ import { PrimaryButton } from '../button/button'
 
 const Footer: NextPage = () => {
   const [isKampaModalShow, setKampaModalShow] = useState(false)
-  const openKampaModal = () => setKampaModalShow(true)
+  const openKampaModal = (e: MouseEvent) => {
+    e.preventDefault()
+    setKampaModalShow(true)
+  }
   const closeKampaModal = () => setKampaModalShow(false)
 
   return (
@@ -24,7 +27,7 @@ const Footer: NextPage = () => {
         </li>
         <li>
           投げ銭いただける方は
-          <a href='javascript:void(0);' onClick={openKampaModal}>
+          <a href='#' onClick={(e) => openKampaModal(e)}>
             こちら
           </a>
           からお願いします。
