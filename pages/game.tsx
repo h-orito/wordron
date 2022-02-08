@@ -26,7 +26,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const GamePage = ({
   data
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  // TODO how to play
   // TODO tweet
   // TODO 正解の文字が被っているパターン
   // TODO 結果モーダル
@@ -36,10 +35,11 @@ const GamePage = ({
   const answerLength: number = game.dictionaries[0].length
 
   // How to Playモーダル
-  const [isHowtoModalOpen, setHowtoModalOpen] = useState(true)
+  const [isHowtoModalOpen, setHowtoModalOpen] = useState(false)
+  const openHowtoModal = () => setHowtoModalOpen(true)
   const closeHowtoModal = () => setHowtoModalOpen(false)
   // 結果モーダル
-  const [isResultModalOpen, setResultModalOpen] = useState(true)
+  const [isResultModalOpen, setResultModalOpen] = useState(false)
   const closeResultModal = () => setResultModalOpen(false)
   // 回答入力欄
   const [currentAnswer, setCurrentAnswer] = useState('')
@@ -86,11 +86,22 @@ const GamePage = ({
       </Head>
 
       <div className='text-sm'>
-        <p className='mb-2 text-xl'>{game.name}</p>
+        <p className='mb-2 text-xl'>テーマ: {game.name}</p>
         <p className='text-gray-400'>
           解答パターン: {game.dictionaries.length}通り
         </p>
+        <p className='text-gray-400'>回答回数: {maxAnswerCount}回まで</p>
         <p className='text-gray-400'>{game.description}</p>
+        <a
+          href='#'
+          className=''
+          onClick={(e) => {
+            e.preventDefault
+            openHowtoModal()
+          }}
+        >
+          遊び方
+        </a>
         <div className='my-5'>
           <AnswerHistories
             answers={answers}
@@ -121,7 +132,7 @@ const GamePage = ({
               onClick={doAnswer}
               disabled={!availableAnswer}
             >
-              解答する
+              回答する
             </PrimaryButton>
           </div>
           {currentAnswerError.length > 0 && (
@@ -139,16 +150,10 @@ const GamePage = ({
         </div>
       </div>
 
-      <Modal
-        closeButtonName='Close'
-        handleClose={closeHowtoModal}
-        isShow={isHowtoModalOpen}
-      >
-        <p className='text-xl'>How to Play</p>
-        <div className='mt-5'>
-          <p>TBD</p>
-        </div>
-      </Modal>
+      <HowToModal
+        isHowtoModalOpen={isHowtoModalOpen}
+        closeHowtoModal={closeHowtoModal}
+      />
 
       <Modal
         closeButtonName='Close'
@@ -349,4 +354,72 @@ const updateKanas = (answers: Answer[]): Kana[][] => {
       } as Kana
     })
   })
+}
+
+type HowToModalProp = {
+  isHowtoModalOpen: boolean
+  closeHowtoModal: () => void
+}
+const HowToModal = (prop: HowToModalProp) => {
+  const { isHowtoModalOpen, closeHowtoModal } = prop
+  return (
+    <Modal
+      closeButtonName='Close'
+      handleClose={closeHowtoModal}
+      isShow={isHowtoModalOpen}
+    >
+      <p className='text-xl'>あそびかた</p>
+      <div className='mt-5 text-gray-600'>
+        <p>
+          お題の答えを当てるクイズゲームです。
+          <br />
+          回答欄から回答すると、正解の文字列と近い部分の色が表示されます。
+        </p>
+        <div className='my-5'>
+          <div className='flex gap-2 justify-center'>
+            <div
+              className={`w-12 h-12 text-4xl text-center text-white rounded border-4 ${styles.yellow}`}
+            >
+              て
+            </div>
+            <div
+              className={`w-12 h-12 text-4xl text-center text-white rounded border-4 ${styles.gray}`}
+            >
+              ぃ
+            </div>
+            <div
+              className={`w-12 h-12 text-4xl text-center text-white rounded border-4 ${styles.gray}`}
+            >
+              っ
+            </div>
+            <div
+              className={`w-12 h-12 text-4xl text-center text-white rounded border-4 ${styles.green}`}
+            >
+              し
+            </div>
+            <div
+              className={`w-12 h-12 text-4xl text-center text-white rounded border-4 ${styles.gray}`}
+            >
+              ゅ
+            </div>
+          </div>
+        </div>
+        <p className='mb-5'>
+          たとえば「てぃっしゅ」と回答してこのように表示された場合、
+        </p>
+        <div className='flex justify-center mb-5'>
+          <ul className='leading-relaxed list-disc text-left'>
+            <li>「し」は正解の文字列に含まれていて、位置も合っています。</li>
+            <li>
+              「て」は正解の文字列に含まれていますが、位置が合っていません。
+            </li>
+            <li>「ぃ」「っ」「ゅ」は正解の文字列に含まれていません。</li>
+          </ul>
+        </div>
+        <p>
+          正解の文字列に含まれる文字をヒントにしながら、規定回数以内で答えを見つけ出しましょう。
+        </p>
+      </div>
+    </Modal>
+  )
 }
