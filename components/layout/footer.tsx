@@ -51,7 +51,7 @@ const Footer: NextPage = () => {
         <p className='text-xl'>投げ銭について</p>
         <div className='mt-5'>
           <p className='mb-2 text-lg'>匿名でAmazonギフトカードを送る</p>
-          <ul className='text-slate-600'>
+          <ul className='leading-relaxed text-slate-600'>
             <li>
               Amazonギフトカードによる投げ銭（15円〜、手数料なし）になります。
             </li>
@@ -60,18 +60,21 @@ const Footer: NextPage = () => {
             </li>
             <li>
               投げ銭していただける方は下記手順にてお願いします。
-              <ol className='mt-2 ml-10 list-decimal'>
-                <li>
-                  最下段の「Amazonギフトカードで投げ銭」よりKampa!サイトへ遷移
-                </li>
-                <li>
-                  表示されたページのメールアドレスをコピーし、Kampa!ボタンをクリック
-                </li>
-                <li>
-                  「金額」に投げ銭していただける金額を入力、「受取人」にコピーしたメールアドレスを貼り付けし、購入
-                  （応援メッセージをいただけると喜びます）
-                </li>
-              </ol>
+              <div className='flex justify-center'>
+                <ol className='mt-2 ml-10 list-decimal text-left'>
+                  <li>
+                    最下段の「Amazonギフトカードで投げ銭」よりKampa!サイトへ遷移
+                  </li>
+                  <li>
+                    表示されたページのメールアドレスをコピーし、Kampa!ボタンをクリック
+                  </li>
+                  <li>
+                    「金額」に投げ銭していただける金額を入力、「受取人」にコピーしたメールアドレスを貼り付けし、購入
+                    <br />
+                    （応援メッセージをいただけると喜びます）
+                  </li>
+                </ol>
+              </div>
             </li>
           </ul>
           <PrimaryButton
