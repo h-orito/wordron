@@ -7,6 +7,7 @@ import InputText from '../components/form/input-text'
 import { PrimaryButton } from '../components/button/button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBackspace } from '@fortawesome/free-solid-svg-icons'
+import styles from './game.module.css'
 
 type Data = {
   game: Game | null
@@ -34,9 +35,12 @@ const GamePage = ({
   const maxAnswerCount: number = game.maxAnswerCount
   const answerLength: number = game.dictionaries[0].length
 
-  // modal
+  // How to Playモーダル
   const [isHowtoModalOpen, setHowtoModalOpen] = useState(true)
   const closeHowtoModal = () => setHowtoModalOpen(false)
+  // 結果モーダル
+  const [isResultModalOpen, setResultModalOpen] = useState(true)
+  const closeResultModal = () => setResultModalOpen(false)
   // 回答入力欄
   const [currentAnswer, setCurrentAnswer] = useState('')
   const addCharToCurrentAnswer = (char: string) => {
@@ -88,30 +92,11 @@ const GamePage = ({
         </p>
         <p className='text-gray-400'>{game.description}</p>
         <div className='my-5'>
-          <div className='flex flex-col gap-2'>
-            {answers.map((answer, colIdx) => (
-              <div key={colIdx} className='flex gap-2 justify-center'>
-                {answer.strs.map((answerString, rowIdx) => (
-                  <div
-                    key={rowIdx}
-                    className={`w-12 h-12 text-4xl text-center rounded border-4 border-gray-300 text-white ${answerString.color}`}
-                  >
-                    {answerString.str}
-                  </div>
-                ))}
-              </div>
-            ))}
-            {[...Array(maxAnswerCount - answers.length)].map((_, colIdx) => (
-              <div key={colIdx} className='flex gap-2 justify-center'>
-                {[...Array(answerLength)].map((_, rowIdx) => (
-                  <div
-                    key={rowIdx}
-                    className='w-12 h-12 text-4xl text-center text-white rounded border-4 border-gray-300'
-                  ></div>
-                ))}
-              </div>
-            ))}
-          </div>
+          <AnswerHistories
+            answers={answers}
+            maxAnswerCount={maxAnswerCount}
+            answerLength={answerLength}
+          />
         </div>
 
         <div className='mt-10 mb-5'>
@@ -145,42 +130,12 @@ const GamePage = ({
         </div>
 
         <div className='my-5'>
-          <div className='flex flex-col gap-1'>
-            <div className='flex gap-1 justify-center'>
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className='w-10 h-10'></div>
-              ))}
-              <div
-                className='h-10 text-center text-gray-600 bg-gray-200 rounded border-4 border-gray-200 cursor-pointer sm:text-2xl'
-                style={{ width: '5.25rem' }}
-                onClick={removeCurrentAnswer}
-              >
-                <FontAwesomeIcon icon={faBackspace} className='mt-0.5' />
-              </div>
-            </div>
-            {kanas.map((col, colIdx) => (
-              <div key={colIdx} className='flex gap-1 justify-center'>
-                {col.map((kana, rowIdx) => (
-                  <div
-                    key={rowIdx}
-                    className={`w-10 h-10 ${
-                      kana.kana != null
-                        ? 'sm:text-2xl text-center rounded border-4 border-gray-200 bg-gray-200'
-                        : ''
-                    } ${
-                      kana.color != null
-                        ? `text-white ${kana.color}`
-                        : 'text-gray-600 '
-                    }
-                       ${availableAnswer ? 'cursor-pointer' : ''}`}
-                    onClick={() => addCharToCurrentAnswer(kana.kana || '')}
-                  >
-                    {kana.kana}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
+          <Kanas
+            addCharToCurrentAnswer={addCharToCurrentAnswer}
+            removeCurrentAnswer={removeCurrentAnswer}
+            kanas={kanas}
+            availableAnswer={availableAnswer}
+          />
         </div>
       </div>
 
@@ -194,11 +149,111 @@ const GamePage = ({
           <p>TBD</p>
         </div>
       </Modal>
+
+      <Modal
+        closeButtonName='Close'
+        handleClose={closeResultModal}
+        isShow={isResultModalOpen}
+      >
+        <p className='text-xl'>Result</p>
+        <div className='mt-5'>
+          <p>TBD</p>
+        </div>
+      </Modal>
     </div>
   )
 }
 
 export default GamePage
+
+type AnswerHistoriesProp = {
+  answers: Answer[]
+  maxAnswerCount: number
+  answerLength: number
+}
+
+const AnswerHistories = (prop: AnswerHistoriesProp) => {
+  const { answers, maxAnswerCount, answerLength } = prop
+  return (
+    <div className='flex flex-col gap-2'>
+      {answers.map((answer, colIdx) => (
+        <div key={colIdx} className='flex gap-2 justify-center'>
+          {answer.strs.map((answerString, rowIdx) => {
+            return (
+              <div
+                key={rowIdx}
+                className={`w-12 h-12 text-4xl text-center text-white rounded border-4 ${answerString.color}`}
+              >
+                {answerString.str}
+              </div>
+            )
+          })}
+        </div>
+      ))}
+      {[...Array(maxAnswerCount - answers.length)].map((_, colIdx) => (
+        <div key={colIdx} className='flex gap-2 justify-center'>
+          {[...Array(answerLength)].map((_, rowIdx) => (
+            <div
+              key={rowIdx}
+              className='w-12 h-12 text-4xl text-center text-white rounded border-4 border-gray-300'
+            ></div>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+type KanasProp = {
+  addCharToCurrentAnswer: (s: string) => void
+  removeCurrentAnswer: () => void
+  kanas: Kana[][]
+  availableAnswer: boolean
+}
+const Kanas = (prop: KanasProp) => {
+  const {
+    addCharToCurrentAnswer,
+    removeCurrentAnswer,
+    kanas,
+    availableAnswer
+  } = prop
+  return (
+    <div className='flex flex-col gap-1'>
+      <div className='flex gap-1 justify-center'>
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className='w-10 h-10'></div>
+        ))}
+        <div
+          className='h-10 text-center text-gray-600 bg-gray-200 rounded border-4 border-gray-200 cursor-pointer sm:text-2xl'
+          style={{ width: '5.25rem' }}
+          onClick={removeCurrentAnswer}
+        >
+          <FontAwesomeIcon icon={faBackspace} className='mt-0.5' />
+        </div>
+      </div>
+      {kanas.map((col, colIdx) => (
+        <div key={colIdx} className='flex gap-1 justify-center'>
+          {col.map((kana, rowIdx) => {
+            return (
+              <div
+                key={rowIdx}
+                className={`w-10 h-10 ${
+                  kana.kana != null
+                    ? 'sm:text-2xl text-center rounded border-4 border-gray-200 bg-gray-200'
+                    : ''
+                } ${kana.color != null ? kana.color : 'text-gray-600 '}
+                       ${availableAnswer ? 'cursor-pointer' : ''}`}
+                onClick={() => addCharToCurrentAnswer(kana.kana || '')}
+              >
+                {kana.kana}
+              </div>
+            )
+          })}
+        </div>
+      ))}
+    </div>
+  )
+}
 
 type Answer = {
   strs: AnswerString[]
@@ -263,10 +318,10 @@ const addAnswer = (
         str: char,
         color:
           correctAnswerChars[index] === char
-            ? 'bg-green-500'
+            ? styles.green
             : correctAnswerChars.some((a: string) => a === char)
-            ? 'bg-yellow-500'
-            : 'bg-gray-500'
+            ? styles.yellow
+            : styles.gray
       }
     })
   } as Answer
@@ -281,12 +336,12 @@ const updateKanas = (answers: Answer[]): Kana[][] => {
       const strs: AnswerString[] = answers.flatMap((answer) =>
         answer.strs.filter((s) => s.str === kana.kana)
       )
-      const color = strs.some((s) => s.color === 'bg-green-500')
-        ? 'bg-green-500'
-        : strs.some((s) => s.color === 'bg-yellow-500')
-        ? 'bg-yellow-500'
-        : strs.some((s) => s.color === 'bg-gray-500')
-        ? 'bg-gray-500'
+      const color = strs.some((s) => s.color === styles.green)
+        ? styles.green
+        : strs.some((s) => s.color === styles.yellow)
+        ? styles.yellow
+        : strs.some((s) => s.color === styles.gray)
+        ? styles.gray
         : null
       return {
         kana: kana.kana,

@@ -1,0 +1,11 @@
+.green {
+  @apply text-white bg-green-500 border-green-500;
+}
+
+.yellow {
+  @apply text-white bg-yellow-500 border-yellow-500;
+}
+
+.gray {
+  @apply text-white bg-gray-500 border-gray-500;
+}
