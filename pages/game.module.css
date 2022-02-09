@@ -1,3 +1,7 @@
+.answerCell {
+  @apply w-12 h-12 text-4xl text-center rounded border-4;
+}
+
 .green {
   @apply text-white bg-green-500 border-green-500;
 }

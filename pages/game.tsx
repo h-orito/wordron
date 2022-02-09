@@ -27,7 +27,6 @@ const GamePage = ({
   data
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   // TODO tweet
-  // TODO 正解の文字が被っているパターン
   // TODO 結果モーダル
 
   const game: Game = data.game
@@ -171,6 +170,7 @@ const GamePage = ({
 
 export default GamePage
 
+// 回答履歴
 type AnswerHistoriesProp = {
   answers: Answer[]
   maxAnswerCount: number
@@ -187,7 +187,7 @@ const AnswerHistories = (prop: AnswerHistoriesProp) => {
             return (
               <div
                 key={rowIdx}
-                className={`w-12 h-12 text-4xl text-center text-white rounded border-4 ${answerString.color}`}
+                className={`${styles.answerCell} ${answerString.color}`}
               >
                 {answerString.str}
               </div>
@@ -200,7 +200,7 @@ const AnswerHistories = (prop: AnswerHistoriesProp) => {
           {[...Array(answerLength)].map((_, rowIdx) => (
             <div
               key={rowIdx}
-              className='w-12 h-12 text-4xl text-center text-white rounded border-4 border-gray-300'
+              className={`${styles.answerCell} text-white border-gray-300`}
             ></div>
           ))}
         </div>
@@ -319,14 +319,38 @@ const addAnswer = (
   const correctAnswerChars = correctAnswer.split('')
   const newAnswer = {
     strs: currentAnswerChars.map((char: string, index: number) => {
+      let color = ''
+      if (correctAnswerChars[index] === char) {
+        // 完全一致は特に問題なし
+        color = styles.green
+      } else if (!correctAnswerChars.some((a: string) => a === char)) {
+        // 存在しない場合は特に問題なし
+        color = styles.gray
+      } else {
+        // 完全一致していないが存在する
+        // その文字の[緑個数 + 自分より左の黄個数] < [その文字が正解に含まれる数]なら黄
+        let correctCount = correctAnswerChars.filter((c) => c === char).length
+        let count = 0
+        // 緑
+        correctAnswerChars.map((c, i) => {
+          if (c === currentAnswerChars[i] && c === char) count++
+        })
+        // 自分より左の黄色個数
+        for (let i = 0; i < index; i++) {
+          const current = currentAnswerChars[i]
+          const correct = correctAnswerChars[i]
+          if (correct !== char && current === char) count++
+        }
+        if (count < correctCount) {
+          color = styles.yellow
+        } else {
+          color = styles.gray
+        }
+      }
+
       return {
         str: char,
-        color:
-          correctAnswerChars[index] === char
-            ? styles.green
-            : correctAnswerChars.some((a: string) => a === char)
-            ? styles.yellow
-            : styles.gray
+        color: color
       }
     })
   } as Answer
@@ -377,31 +401,11 @@ const HowToModal = (prop: HowToModalProp) => {
         </p>
         <div className='my-5'>
           <div className='flex gap-2 justify-center'>
-            <div
-              className={`w-12 h-12 text-4xl text-center text-white rounded border-4 ${styles.yellow}`}
-            >
-              て
-            </div>
-            <div
-              className={`w-12 h-12 text-4xl text-center text-white rounded border-4 ${styles.gray}`}
-            >
-              ぃ
-            </div>
-            <div
-              className={`w-12 h-12 text-4xl text-center text-white rounded border-4 ${styles.gray}`}
-            >
-              っ
-            </div>
-            <div
-              className={`w-12 h-12 text-4xl text-center text-white rounded border-4 ${styles.green}`}
-            >
-              し
-            </div>
-            <div
-              className={`w-12 h-12 text-4xl text-center text-white rounded border-4 ${styles.gray}`}
-            >
-              ゅ
-            </div>
+            <div className={`${styles.answerCell} ${styles.yellow}`}>て</div>
+            <div className={`${styles.answerCell}  ${styles.gray}`}>ぃ</div>
+            <div className={`${styles.answerCell}  ${styles.gray}`}>っ</div>
+            <div className={`${styles.answerCell}  ${styles.green}`}>し</div>
+            <div className={`${styles.answerCell}  ${styles.gray}`}>ゅ</div>
           </div>
         </div>
         <p className='mb-5'>
@@ -420,6 +424,57 @@ const HowToModal = (prop: HowToModalProp) => {
           正解の文字列に含まれる文字をヒントにしながら、規定回数以内で答えを見つけ出しましょう。
         </p>
       </div>
+      <hr className='my-10' />
+      <p className='text-xl'>特殊な例</p>
+      <p className='my-5'>たとえば「はるうらら」が正解の場合、</p>
+      <div className='my-5'>
+        <div className='flex gap-2 justify-center'>
+          <div className={`${styles.answerCell} ${styles.yellow}`}>ら</div>
+          <div className={`${styles.answerCell}  ${styles.yellow}`}>ら</div>
+          <div className={`${styles.answerCell}  ${styles.gray}`}>ら</div>
+          <div className={`${styles.answerCell}  ${styles.gray}`}>ー</div>
+          <div className={`${styles.answerCell}  ${styles.gray}`}>ー</div>
+        </div>
+      </div>
+      <p className='mb-5'>
+        回答には「ら」が3個ありますが、お題には「ら」が2つしかないため、最初の2つしか黄色になりません。
+      </p>
+      <div className='my-5'>
+        <div className='flex gap-2 justify-center'>
+          <div className={`${styles.answerCell} ${styles.gray}`}>ー</div>
+          <div className={`${styles.answerCell}  ${styles.yellow}`}>ら</div>
+          <div className={`${styles.answerCell}  ${styles.yellow}`}>ら</div>
+          <div className={`${styles.answerCell}  ${styles.gray}`}>ー</div>
+          <div className={`${styles.answerCell}  ${styles.gray}`}>ー</div>
+        </div>
+      </div>
+      <p className='mb-5'>
+        この場合は回答に「ら」が2つしかないため、両方が黄色になります。
+      </p>
+      <div className='my-5'>
+        <div className='flex gap-2 justify-center'>
+          <div className={`${styles.answerCell} ${styles.gray}`}>ー</div>
+          <div className={`${styles.answerCell}  ${styles.yellow}`}>ら</div>
+          <div className={`${styles.answerCell}  ${styles.gray}`}>ら</div>
+          <div className={`${styles.answerCell}  ${styles.green}`}>ら</div>
+          <div className={`${styles.answerCell}  ${styles.gray}`}>ー</div>
+        </div>
+      </div>
+      <p className='mb-5'>
+        この場合、回答には「ら」が3個ありますが、緑色が優先されるため、最初の1つしか黄色になりません。
+      </p>
+      <div className='my-5'>
+        <div className='flex gap-2 justify-center'>
+          <div className={`${styles.answerCell} ${styles.gray}`}>う</div>
+          <div className={`${styles.answerCell}  ${styles.green}`}>る</div>
+          <div className={`${styles.answerCell}  ${styles.green}`}>う</div>
+          <div className={`${styles.answerCell}  ${styles.gray}`}>ど</div>
+          <div className={`${styles.answerCell}  ${styles.gray}`}>し</div>
+        </div>
+      </div>
+      <p className='mb-5'>
+        同じく、3文字目の緑色が優先されるため、最初の1つは灰色になります。
+      </p>
     </Modal>
   )
 }
