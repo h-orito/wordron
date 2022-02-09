@@ -157,7 +157,7 @@ const GamePage = ({
         <div className='mt-10'>
           <div className='mb-2'>
             <TwitterShareButton
-              url={`${process.env.NEXT_PUBLIC_API_ORIGIN}/game?key=${game.key}`}
+              url={`${process.env.NEXT_PUBLIC_DOMAIN}/game?key=${game.key}`}
               title={shareContent}
             >
               <div className='flex py-2 px-4 border border-gray-200'>
@@ -200,7 +200,7 @@ const GamePage = ({
         </div>
         <div className='mt-5'>
           <TwitterShareButton
-            url={`${process.env.NEXT_PUBLIC_API_ORIGIN}/game?key=${game.key}`}
+            url={`${process.env.NEXT_PUBLIC_DOMAIN}/game?key=${game.key}`}
             title={shareContent}
           >
             <div className='flex py-2 px-4 border border-gray-200'>
