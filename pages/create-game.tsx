@@ -26,25 +26,28 @@ const NewGamePage = () => {
   const [maxAnswerCountError, setMaxAnswerCountError] = useState('')
 
   const save = async () => {
-    setNameError('')
+    let newNameError = ''
     if (gameName.length < 3 || 20 < gameName.length) {
-      setNameError('わーどる名は3文字以上20文字以内で入力してください。')
+      newNameError = 'わーどる名は3文字以上20文字以内で入力してください。'
     }
+    setNameError(newNameError)
 
-    setDescriptionError('')
+    let newDescriptionError = ''
     if (100 < description.length) {
-      setDescriptionError('説明は100文字以内で入力してください。')
+      newDescriptionError = '説明は100文字以内で入力してください。'
     }
+    setDescriptionError(newDescriptionError)
 
-    setCreatorError('')
+    let newCreatorError = ''
     if (creator.length < 1 || 20 < creator.length) {
-      setCreatorError('作成者名は1文字以上20文字以内で入力してください。')
+      newCreatorError = '作成者名は1文字以上20文字以内で入力してください。'
     }
+    setCreatorError(newCreatorError)
 
-    setDictionariesError('')
+    let newDictionariesError = ''
     const dictionariesArr = dictionaries.split('\n')
     if (dictionariesArr.length < 2) {
-      setDictionariesError('解答候補は2つ以上入力してください。')
+      newDictionariesError = '解答候補は2つ以上入力してください。'
     } else if (
       dictionariesArr.some((word) =>
         word
@@ -52,26 +55,27 @@ const NewGamePage = () => {
           .some((char) => !SystemConst.HIRAGANAS.some((h) => h === char))
       )
     ) {
-      setDictionariesError('解答候補は全てひらがなで入力してください。')
+      newDictionariesError = '解答候補は全てひらがなで入力してください。'
     } else if (
       !dictionariesArr.some((d) => d.length === dictionariesArr[0].length)
     ) {
-      setDictionariesError('解答候補は文字数を揃えてください。')
+      newDictionariesError = '解答候補は文字数を揃えてください。'
     }
+    setDictionariesError(newDictionariesError)
 
-    setMaxAnswerCountError('')
+    let newMaxAnswerCountError = ''
     if (maxAnswerCount < 1 || 20 < maxAnswerCount) {
-      setMaxAnswerCountError(
+      newMaxAnswerCountError =
         '最大回答回数は1回以上20回以内で設定してください。'
-      )
     }
+    setMaxAnswerCountError(newMaxAnswerCountError)
 
     if (
-      nameError.length === 0 &&
-      descriptionError.length === 0 &&
-      creatorError.length === 0 &&
-      dictionariesError.length === 0 &&
-      maxAnswerCountError.length === 0
+      newNameError.length === 0 &&
+      newDescriptionError.length === 0 &&
+      newCreatorError.length === 0 &&
+      newDictionariesError.length === 0 &&
+      newMaxAnswerCountError.length === 0
     ) {
       const game: Game = {
         key: null,
@@ -99,7 +103,7 @@ const NewGamePage = () => {
       <div className='text-sm'>
         <p className='mb-5 text-xl'>新しいわーどるを作成する</p>
         <div className='mb-5'>
-          <Label>わーどる名（テーマ）</Label>
+          <Label>わーどる名（お題）</Label>
           <InputText
             className='mx-auto w-80'
             value={gameName}

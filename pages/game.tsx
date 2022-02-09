@@ -91,7 +91,7 @@ const GamePage = ({
       </Head>
 
       <div className='text-sm'>
-        <p className='mb-2 text-xl'>テーマ: {game.name}</p>
+        <p className='mb-2 text-xl'>お題: {game.name}</p>
         <p className='text-gray-400'>
           解答パターン: {game.dictionaries.length}通り
         </p>
