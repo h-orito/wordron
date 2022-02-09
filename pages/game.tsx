@@ -4,10 +4,12 @@ import Head from 'next/head'
 import Modal from '../components/modal/modal'
 import { SystemConst } from '../components/const'
 import InputText from '../components/form/input-text'
-import { PrimaryButton } from '../components/button/button'
+import { Button, PrimaryButton } from '../components/button/button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBackspace } from '@fortawesome/free-solid-svg-icons'
+import { TwitterShareButton, TwitterIcon } from 'react-share'
 import styles from './game.module.css'
+import Router from 'next/router'
 
 type Data = {
   game: Game | null
@@ -15,7 +17,7 @@ type Data = {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const res = await fetch(
-    `${process.env.API_ORIGIN}/game?key=${context.query.key}`
+    `${process.env.NEXT_PUBLIC_API_ORIGIN}/game?key=${context.query.key}`
   )
   const data: Data = await res.json()
   return {
@@ -26,9 +28,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const GamePage = ({
   data
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  // TODO tweet
-  // TODO 結果モーダル
-
   const game: Game = data.game
   const maxAnswerCount: number = game.maxAnswerCount
   const answerLength: number = game.dictionaries[0].length
@@ -56,6 +55,8 @@ const GamePage = ({
   const [answers, setAnswers] = useState([] as Answer[])
   // 五十音表
   const [kanas, setKanas] = useState(initialKanas)
+  // シェア文言
+  const [shareContent, setShareContent] = useState('')
 
   // 回答する
   const doAnswer = () => {
@@ -68,12 +69,16 @@ const GamePage = ({
     // 回答履歴
     const newAnswers = addAnswer(currentAnswer, correctAnswer, answers)
     setAnswers(newAnswers)
+    setShareContent(createShareContent(game, newAnswers))
     // 五十音表
     setKanas(updateKanas(newAnswers))
     // 回答をリセット
-    if (answers.length >= maxAnswerCount || currentAnswer === correctAnswer) {
+    if (
+      newAnswers.length >= maxAnswerCount ||
+      currentAnswer === correctAnswer
+    ) {
       setAvailableAnswer(false)
-      // TODO result modal
+      setResultModalOpen(true)
     }
     setCurrentAnswer('')
   }
@@ -147,6 +152,24 @@ const GamePage = ({
             availableAnswer={availableAnswer}
           />
         </div>
+
+        <div className='mt-10'>
+          <div className='mb-2'>
+            <TwitterShareButton
+              url={`${process.env.NEXT_PUBLIC_API_ORIGIN}/game?key=${game.key}`}
+              title={shareContent}
+            >
+              <div className='flex py-2 px-4 border border-gray-200'>
+                <TwitterIcon size={20} borderRadius={10} />
+                <p className='ml-2 h-5 leading-5 text-gray-600'>シェアする</p>
+              </div>
+            </TwitterShareButton>
+          </div>
+          <Button onClick={() => Router.push('/')}>トップページへ</Button>
+          <Button onClick={() => Router.push('/create-game')}>
+            新しいわーどるを作成する
+          </Button>
+        </div>
       </div>
 
       <HowToModal
@@ -159,10 +182,37 @@ const GamePage = ({
         handleClose={closeResultModal}
         isShow={isResultModalOpen}
       >
-        <p className='text-xl'>Result</p>
+        {answers.length > 0 && (
+          <p className='text-xl'>
+            {answers[answers.length - 1].strs.map((s) => s.str).join('') ===
+            game.word
+              ? 'Conguraturations!!'
+              : 'Failed..'}
+          </p>
+        )}
         <div className='mt-5'>
-          <p>TBD</p>
+          <AnswerHistories
+            answers={answers}
+            maxAnswerCount={maxAnswerCount}
+            answerLength={answerLength}
+          />
         </div>
+        <div className='mt-5'>
+          <TwitterShareButton
+            url={`${process.env.NEXT_PUBLIC_API_ORIGIN}/game?key=${game.key}`}
+            title={shareContent}
+          >
+            <div className='flex py-2 px-4 border border-gray-200'>
+              <TwitterIcon size={20} borderRadius={10} />
+              <p className='ml-2 h-5 leading-5 text-gray-600'>シェアする</p>
+            </div>
+          </TwitterShareButton>
+        </div>
+        <hr className='my-5' />
+        <Button onClick={() => Router.push('/')}>トップページへ</Button>
+        <Button onClick={() => Router.push('/create-game')}>
+          新しいわーどるを作成する
+        </Button>
       </Modal>
     </div>
   )
@@ -477,4 +527,36 @@ const HowToModal = (prop: HowToModalProp) => {
       </p>
     </Modal>
   )
+}
+
+const createShareContent = (game: Game, answers: Answer[]) => {
+  let countString = ''
+  if (
+    answers.length === game.maxAnswerCount &&
+    !answers[answers.length - 1].strs.some((s) => s.color !== styles.green)
+  ) {
+    countString = `${answers.length}/${game.maxAnswerCount}`
+  } else if (
+    answers.length === game.maxAnswerCount &&
+    answers[answers.length - 1].strs.some((s) => s.color !== styles.green)
+  ) {
+    // 最大回数まで回答したが、正解できなかった
+    countString = `X/${game.maxAnswerCount}`
+  }
+
+  const answerString = answers
+    .map((answer) => {
+      return answer.strs
+        .map((str) => {
+          return str.color === styles.green
+            ? '🟩'
+            : str.color === styles.yellow
+            ? '🟨'
+            : '⬜'
+        })
+        .join('')
+    })
+    .join('\n')
+  const hashTag = '#わーどるめーかー #wordle_maker'
+  return `わーどるめーかー ${countString}\nお題: ${game.name}\n\n${answerString}\n\n${hashTag}`
 }

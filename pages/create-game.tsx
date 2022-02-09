@@ -1,4 +1,3 @@
-import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { useState } from 'react'
 import Head from 'next/head'
 import { SystemConst } from '../components/const'

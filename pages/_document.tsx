@@ -17,6 +17,12 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
+          <meta
+            name='description'
+            content='オリジナルのWordleの問題を作成できるサービスです。'
+          />
+          <meta charSet='utf-8'></meta>
+          <link rel='icon' href='/favicon.ico' />
           <link
             href='https://fonts.googleapis.com/css2?family=Yomogi&display=swap'
             rel='stylesheet'

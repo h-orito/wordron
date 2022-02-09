@@ -16,7 +16,7 @@ type Data = {
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await fetch(`${process.env.API_ORIGIN}/games`)
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_ORIGIN}/games`)
   const data: Data = await res.json()
   return {
     props: { data }
@@ -30,8 +30,6 @@ const Home: NextPage = ({
     <div>
       <Head>
         <title>{SystemConst.APPLICATION_NAME}</title>
-        <meta name='description' content='言葉当てゲーム' />
-        <link rel='icon' href='/favicon.ico' />
       </Head>
 
       <div>
