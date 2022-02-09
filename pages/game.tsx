@@ -56,7 +56,8 @@ const GamePage = ({
   // 五十音表
   const [kanas, setKanas] = useState(initialKanas)
   // シェア文言
-  const [shareContent, setShareContent] = useState('')
+  const initialShareContent = createShareContent(game, answers)
+  const [shareContent, setShareContent] = useState(initialShareContent)
 
   // 回答する
   const doAnswer = () => {
@@ -558,5 +559,7 @@ const createShareContent = (game: Game, answers: Answer[]) => {
     })
     .join('\n')
   const hashTag = '#わーどるめーかー #wordle_maker'
-  return `わーどるめーかー ${countString}\nお題: ${game.name}\n\n${answerString}\n\n${hashTag}`
+  return `わーどるめーかー ${countString}\nお題: ${game.name}\n\n${
+    answerString === '' ? '' : answerString + '\n\n'
+  }${hashTag}\n`
 }
