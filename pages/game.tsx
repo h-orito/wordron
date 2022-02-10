@@ -246,16 +246,25 @@ const AnswerHistories = (prop: AnswerHistoriesProp) => {
           })}
         </div>
       ))}
-      {[...Array(maxAnswerCount - answers.length)].map((_, colIdx) => (
-        <div key={colIdx} className='flex gap-2 justify-center'>
-          {[...Array(answerLength)].map((_, rowIdx) => (
+      {maxAnswerCount > answers.length && (
+        <div className='flex gap-2 justify-center'>
+          {[...Array(answerLength - 3)].map((_, rowIdx) => (
             <div
               key={rowIdx}
               className={`${styles.answerCell} text-white border-gray-300`}
             ></div>
           ))}
+          <div className={`${styles.answerCell} text-gray-300 border-gray-300`}>
+            残
+          </div>
+          <div className={`${styles.answerCell} text-gray-300 border-gray-300`}>
+            {maxAnswerCount - answers.length}
+          </div>
+          <div className={`${styles.answerCell} text-gray-300 border-gray-300`}>
+            回
+          </div>
         </div>
-      ))}
+      )}
     </div>
   )
 }
