@@ -57,7 +57,7 @@ const NewGamePage = () => {
     ) {
       newDictionariesError = '解答候補は全てひらがなで入力してください。'
     } else if (
-      !dictionariesArr.some((d) => d.length === dictionariesArr[0].length)
+      dictionariesArr.some((d) => d.length !== dictionariesArr[0].length)
     ) {
       newDictionariesError = '解答候補は文字数を揃えてください。'
     }
