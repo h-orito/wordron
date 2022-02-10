@@ -277,32 +277,36 @@ const Kanas = (prop: KanasProp) => {
     <div className='flex flex-col gap-1'>
       <div className='flex gap-1 justify-center'>
         {[...Array(8)].map((_, i) => (
-          <div key={i} className='w-10 h-10'></div>
+          <div key={i} className='w-11 h-11'></div>
         ))}
-        <div
+        <button
           className='h-10 text-center text-gray-600 bg-gray-200 rounded border-4 border-gray-200 cursor-pointer sm:text-2xl'
           style={{ width: '5.25rem' }}
           onClick={removeCurrentAnswer}
         >
           <FontAwesomeIcon icon={faBackspace} className='mt-0.5' />
-        </div>
+        </button>
       </div>
       {kanas.map((col, colIdx) => (
         <div key={colIdx} className='flex gap-1 justify-center'>
           {col.map((kana, rowIdx) => {
             return (
-              <div
+              <button
                 key={rowIdx}
-                className={`w-10 h-10 ${
+                className={`w-11 h-11 ${
                   kana.kana != null
-                    ? 'sm:text-2xl text-center rounded border-4 border-gray-200 bg-gray-200'
+                    ? 'sm:text-2xl text-center rounded bg-gray-200'
                     : ''
                 } ${kana.color != null ? kana.color : 'text-gray-600 '}
                        ${availableAnswer ? 'cursor-pointer' : ''}`}
-                onClick={() => addCharToCurrentAnswer(kana.kana || '')}
+                onTouchEnd={(e) => {
+                  addCharToCurrentAnswer(kana.kana || '')
+                  e.preventDefault()
+                }}
+                onMouseUp={() => addCharToCurrentAnswer(kana.kana || '')}
               >
                 {kana.kana}
-              </div>
+              </button>
             )
           })}
         </div>
