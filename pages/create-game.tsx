@@ -60,6 +60,11 @@ const NewGamePage = () => {
       dictionariesArr.some((d) => d.length !== dictionariesArr[0].length)
     ) {
       newDictionariesError = '解答候補は文字数を揃えてください。'
+    } else if (
+      dictionariesArr[0].length < 3 ||
+      10 < dictionariesArr[0].length
+    ) {
+      newDictionariesError = '解答候補は3文字以上10文字以内で入力してください。'
     }
     setDictionariesError(newDictionariesError)
 
@@ -134,7 +139,7 @@ const NewGamePage = () => {
           )}
         </div>
         <div className='mb-5'>
-          <Label>解答候補（ひらがな）</Label>
+          <Label>解答候補（ひらがな3~10文字）</Label>
           <p className='mb-2 text-sm text-gray-500'>
             この中からランダムでお題が出題されます。
           </p>
