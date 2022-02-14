@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { database } from '../../plugins/firebase'
+import { auth, database } from '../../plugins/firebase'
 
 type Data = {
   games: Game[]
@@ -35,6 +35,9 @@ export default async function handler(
 
 const handlePost = async (req: NextApiRequest) => {
   const game: Game = JSON.parse(req.body)
+
+  // login
+  await auth.signInAnonymously()
 
   // register new game to firebase
   const newGameRef = database.ref().child('games').push()
