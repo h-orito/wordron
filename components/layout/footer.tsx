@@ -1,7 +1,7 @@
-import { useState } from 'react'
 import type { NextPage } from 'next'
-import Modal from '../modal/modal'
+import { useState } from 'react'
 import { PrimaryButton } from '../button/button'
+import Modal from '../modal/modal'
 
 const Footer: NextPage = () => {
   const [isKampaModalShow, setKampaModalShow] = useState(false)
@@ -50,36 +50,18 @@ const Footer: NextPage = () => {
       >
         <p className='text-xl'>投げ銭について</p>
         <div className='mt-5'>
-          <p className='mb-2 text-lg'>匿名でAmazonギフトカードを送る</p>
+          <p className='mb-2 text-lg'>Amazonギフトカード（Eメール）を送る</p>
           <ul className='leading-relaxed text-slate-600'>
             <li>
-              Amazonギフトカードによる投げ銭（15円〜、手数料なし）になります。
+              受取人に「wolfortあっとgooglegroups.com」を指定してください（あっとのところは@に変えてください）。
             </li>
-            <li>
-              Kampa!というサービスを利用することで、個人情報をやりとりすることなくAmazonギフトカードで投げ銭することができます。
-            </li>
-            <li>
-              投げ銭していただける方は下記手順にてお願いします。
-              <div className='flex justify-center'>
-                <ol className='mt-2 ml-10 list-decimal text-left'>
-                  <li>
-                    最下段の「Amazonギフトカードで投げ銭」よりKampa!サイトへ遷移
-                  </li>
-                  <li>
-                    表示されたページのメールアドレスをコピーし、Kampa!ボタンをクリック
-                  </li>
-                  <li>
-                    「金額」に投げ銭していただける金額を入力、「受取人」にコピーしたメールアドレスを貼り付けし、購入
-                    <br />
-                    （応援メッセージをいただけると喜びます）
-                  </li>
-                </ol>
-              </div>
-            </li>
+            <li>金額は15円以上で自由に変更できます。 </li>
           </ul>
           <PrimaryButton
             className='my-2'
-            onClick={() => window.open('http://kampa.me/t/lxc')}
+            onClick={() =>
+              window.open('https://www.amazon.co.jp/dp/B004N3APGO')
+            }
           >
             Amazonギフトカードで投げ銭する
           </PrimaryButton>
