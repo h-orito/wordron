@@ -57,7 +57,7 @@ const Home: NextPage = ({
                   <tr key={index}>
                     <td className={`${styles.td} ${tdClass}`}>
                       <Link href={`/game?key=${game.key}`}>
-                        <a>{game.name}</a>
+                        {game.name}
                       </Link>
                     </td>
                     <td className={`${styles.td} ${tdClass}`}>

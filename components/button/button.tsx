@@ -1,4 +1,3 @@
-import { NextPage } from 'next'
 import styles from './button.module.css'
 
 export type Props = {
@@ -8,15 +7,20 @@ export type Props = {
   children: React.ReactNode
 }
 
-const BaseButton: React.FC<Props> = (props: Props, type: string) => {
+type ButtonType = '' | 'primary' | 'warn' | 'danger'
+
+const BaseButton = ({
+  type,
+  ...props
+}: Props & { type: ButtonType }): React.ReactElement => {
   const typeClassName =
     type === 'primary'
       ? `${styles.primary}`
       : type === 'warn'
-      ? `${styles.warn}`
-      : type === 'danger'
-      ? `${styles.danger}`
-      : `${styles.normal}`
+        ? `${styles.warn}`
+        : type === 'danger'
+          ? `${styles.danger}`
+          : `${styles.normal}`
 
   return (
     <button
@@ -29,13 +33,18 @@ const BaseButton: React.FC<Props> = (props: Props, type: string) => {
   )
 }
 
-export const Button: NextPage<Props> = (props: Props) => BaseButton(props, '')
+export const Button = (props: Props): React.ReactElement => (
+  <BaseButton type="" {...props} />
+)
 
-export const PrimaryButton: NextPage<Props> = (props: Props) =>
-  BaseButton(props, 'primary')
+export const PrimaryButton = (props: Props): React.ReactElement => (
+  <BaseButton type="primary" {...props} />
+)
 
-export const WarnButton: NextPage<Props> = (props: Props) =>
-  BaseButton(props, 'warn')
+export const WarnButton = (props: Props): React.ReactElement => (
+  <BaseButton type="warn" {...props} />
+)
 
-export const DangerButton: NextPage<Props> = (props: Props) =>
-  BaseButton(props, 'danger')
+export const DangerButton = (props: Props): React.ReactElement => (
+  <BaseButton type="danger" {...props} />
+)

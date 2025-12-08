@@ -1,8 +1,6 @@
-import 'firebase/auth'
-import 'firebase/firestore'
-import 'firebase/database'
-
-import firebase from 'firebase/app'
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app'
+import { getAuth, Auth } from 'firebase/auth'
+import { getDatabase, Database } from 'firebase/database'
 
 const config = {
   apiKey: process.env.API_KEY,
@@ -14,11 +12,12 @@ const config = {
   appId: process.env.APP_ID,
   measurementId: process.env.MEASUREMENT_ID
 }
-// initializeを複数回走らせない
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(config)
-}
 
-const database = firebase.database()
-const auth = firebase.auth()
+// initializeを複数回走らせない
+const app: FirebaseApp =
+  getApps().length === 0 ? initializeApp(config) : getApp()
+
+const database: Database = getDatabase(app)
+const auth: Auth = getAuth(app)
+
 export { auth, database }

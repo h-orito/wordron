@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { useRouter } from 'next/router'
+import { ref, get } from 'firebase/database'
 import { database } from '../../plugins/firebase'
 
 type Data = {
@@ -11,7 +11,8 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   const key = req.query.key as string
-  const snapshot = await database.ref(`games/${key}`).get()
+  const gameRef = ref(database, `games/${key}`)
+  const snapshot = await get(gameRef)
   const g = snapshot.val() as Game
   const game = {
     ...g,
@@ -23,6 +24,6 @@ export default async function handler(
 }
 
 const random = (array: Array<string>) => {
-  var arrayIndex = Math.floor(Math.random() * array.length)
+  const arrayIndex = Math.floor(Math.random() * array.length)
   return array[arrayIndex]
 }

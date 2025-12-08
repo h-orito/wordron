@@ -33,7 +33,7 @@
 - [ ] `npm run build` 成功
 
 ### 進捗
-- [ ] 未着手
+- [x] 完了
 
 ---
 
@@ -58,7 +58,7 @@
 - [ ] 全画面動作確認
 
 ### 進捗
-- [ ] 未着手
+- [x] 完了
 
 ---
 
@@ -114,7 +114,7 @@ get(ref(database, `games/${key}`))
 - [ ] ゲームプレイが正常動作
 
 ### 進捗
-- [ ] 未着手
+- [x] 完了
 
 ---
 
@@ -136,7 +136,7 @@ get(ref(database, `games/${key}`))
 - [ ] build成功
 
 ### 進捗
-- [ ] 未着手
+- [x] 完了
 
 ---
 
@@ -147,7 +147,7 @@ get(ref(database, `games/${key}`))
 - 不要なimport削除（`pages/api/game.ts`の`useRouter`）
 
 ### 進捗
-- [ ] 未着手
+- [x] 完了（textarea.tsxでonKeyDown対応済み、game.tsのuseRouter削除済み）
 
 ---
 

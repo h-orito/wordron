@@ -4,7 +4,7 @@ export type Props = {
   name?: string
   value?: string
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement>
-  onKeyPress?: React.KeyboardEventHandler<HTMLTextAreaElement>
+  onKeyDown?: React.KeyboardEventHandler<HTMLTextAreaElement>
   disabled?: boolean
 }
 
@@ -16,11 +16,9 @@ const Textarea: React.FC<Props> = (props: Props) => {
       className={`block py-2 px-4 rounded border border-gray-200 disabled:opacity-50 ${props.className}`}
       value={props.value}
       onChange={props.onChange}
-      onKeyPress={props.onKeyPress}
+      onKeyDown={props.onKeyDown}
       disabled={props.disabled}
-    >
-      {props.value}
-    </textarea>
+    />
   )
 }
 

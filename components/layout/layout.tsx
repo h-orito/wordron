@@ -1,8 +1,11 @@
-import { NextPage } from 'next'
 import NavBar from './navbar'
 import Footer from './footer'
 
-const Layout: NextPage = ({ children }) => {
+type Props = {
+  children: React.ReactNode
+}
+
+const Layout = ({ children }: Props): React.ReactElement => {
   return (
     <div className='w-full'>
       <NavBar />
