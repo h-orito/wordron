@@ -1,6 +1,0 @@
-minimumReleaseAgeExclude:
-  - react
-  - react-dom
-  - next
-  - eslint-config-next
-  - '@next/*'
